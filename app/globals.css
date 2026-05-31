@@ -1,0 +1,79 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --color-navy: #1f3a57;
+    --color-navy-hover: #142940;
+    --color-gold: #c8a668;
+    --color-gold-hover: #a98851;
+    --color-sand: #f5efe6;
+    --color-sand-soft: #faf6ee;
+    --color-ink: #0b1a2b;
+    --color-ink-muted: #4b5c70;
+    --color-line: #e6decb;
+    --radius-control: 0.5rem;
+    --radius-card: 0.875rem;
+    --shadow-card: 0 8px 20px -4px rgba(11, 26, 43, 0.1),
+      0 4px 8px -4px rgba(11, 26, 43, 0.05);
+  }
+
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    @apply bg-sand-100 text-ink font-sans;
+    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+  }
+
+  h1, h2, h3, h4 {
+    @apply font-display text-navy-700;
+  }
+
+  ::selection {
+    background-color: rgba(200, 166, 104, 0.35);
+    color: #0b1a2b;
+  }
+
+  :focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(200, 166, 104, 0.35);
+    border-radius: var(--radius-control);
+  }
+}
+
+@layer components {
+  .container-page {
+    @apply mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8;
+  }
+
+  .text-eyebrow {
+    @apply text-2xs font-semibold uppercase tracking-[0.18em] text-gold-700;
+  }
+
+  .text-display {
+    @apply font-display text-4xl text-navy-700;
+  }
+
+  .divider {
+    @apply h-px w-full bg-line;
+  }
+
+  .divider-gold {
+    @apply h-px w-12 bg-gold-500;
+  }
+}
+
+@layer utilities {
+  .bg-grain {
+    background-image: radial-gradient(
+      rgba(11, 26, 43, 0.04) 1px,
+      transparent 1px
+    );
+    background-size: 24px 24px;
+  }
+}
