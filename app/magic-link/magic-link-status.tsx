@@ -5,11 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { AlertTriangle, Loader2 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { Button, ButtonSize } from '@/components/ui/button'
-
-export enum MagicLinkState {
-  Checking = 'checking',
-  Error = 'error',
-}
+import { MagicLinkState } from './magic-link-state'
 
 export function MagicLinkStatus({
   initialState,

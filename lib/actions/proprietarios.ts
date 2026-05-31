@@ -6,6 +6,7 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { requireAdmin } from './_guards'
 import { ProprietarioSchema, type ProprietarioInput } from '@/lib/validations'
 import { enviarBoasVindasProprietario } from '@/lib/utils/emails'
+import { getAppUrl } from '@/lib/utils/app-url'
 import {
   StatusContrato,
   StatusImovel,
@@ -194,7 +195,7 @@ export async function createProprietario(
       type: 'magiclink',
       email: data.email,
       options: {
-        redirectTo: `${process.env.NEXT_PUBLIC_APP_URL ?? ''}/portal`,
+        redirectTo: `${getAppUrl()}/portal`,
       },
     })
     const action_link = linkData?.properties?.action_link

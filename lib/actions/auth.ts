@@ -3,6 +3,7 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { getAppUrl } from '@/lib/utils/app-url'
 import { UserRole, type ActionResult, type CurrentUser } from '@/types'
 
 export async function loginAdmin(
@@ -52,7 +53,7 @@ export async function sendMagicLink(
     }
 
     const supabase = await createClient()
-    const redirectTo = `${process.env.NEXT_PUBLIC_APP_URL ?? ''}/magic-link`
+    const redirectTo = `${getAppUrl()}/magic-link`
     const { error } = await supabase.auth.signInWithOtp({
       email,
       options: { emailRedirectTo: redirectTo },
@@ -72,7 +73,7 @@ export async function sendPasswordReset(
     if (!email) return { error: 'Informe o e-mail para recuperar a senha' }
 
     const supabase = await createClient()
-    const redirectTo = `${process.env.NEXT_PUBLIC_APP_URL ?? ''}/login`
+    const redirectTo = `${getAppUrl()}/login`
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo,
     })

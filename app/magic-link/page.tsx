@@ -1,7 +1,8 @@
 import { Suspense } from 'react'
 import { Card } from '@/components/ui/card'
 import { Logo } from '@/components/ui/logo'
-import { MagicLinkState, MagicLinkStatus } from './magic-link-status'
+import { MagicLinkState } from './magic-link-state'
+import { MagicLinkStatus } from './magic-link-status'
 
 export const dynamic = 'force-dynamic'
 
