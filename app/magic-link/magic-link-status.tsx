@@ -28,10 +28,28 @@ export function MagicLinkStatus({
     }
 
     async function verify() {
-      const code = searchParams.get('code')
+      // Fluxo token_hash: gerado pelo Admin SDK (generateLink).
+      // Não depende de PKCE — funciona mesmo que o link venha do servidor.
+      const tokenHash = searchParams.get('token_hash')
+      const type = searchParams.get('type') as 'magiclink' | 'email' | null
 
-      // Fluxo PKCE: troca o código (na query) por uma sessão; o client do
-      // browser persiste os cookies que o servidor lê em seguida.
+      if (tokenHash && type) {
+        const { data, error } = await supabase.auth.verifyOtp({
+          token_hash: tokenHash,
+          type: type === 'email' ? 'email' : 'magiclink',
+        })
+        if (cancelled) return
+        if (!error && data.session) {
+          goToPortal()
+          return
+        }
+        setState(MagicLinkState.Error)
+        return
+      }
+
+      // Fluxo PKCE: código na query string — fallback para links gerados
+      // pelo signInWithOtp client-side.
+      const code = searchParams.get('code')
       if (code) {
         const { data, error } = await supabase.auth.exchangeCodeForSession(code)
         if (cancelled) return

@@ -6,13 +6,14 @@ import { KeyRound, Mail } from 'lucide-react'
 import { toast } from 'sonner'
 import {
   loginAdmin,
-  sendMagicLink,
   sendPasswordReset,
 } from '@/lib/actions/auth'
 import { Button, ButtonSize, ButtonVariant } from '@/components/ui/button'
 import { Field } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { createClient } from '@/lib/supabase/client'
+import { getAppUrl } from '@/lib/utils/app-url'
 
 enum AuthTab {
   Admin = 'admin',
@@ -159,12 +160,38 @@ function ProprietarioForm() {
     setErro(undefined)
     setLoading(true)
 
-    const res = await sendMagicLink(email)
-    setLoading(false)
-    if (res.error || !res.data) {
-      setErro(res.error ?? 'Falha ao enviar o link')
+    // 1. Valida server-side se o e-mail pertence a um proprietário.
+    const res = await fetch('/api/auth/validate-proprietario', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email }),
+    })
+    const data = await res.json()
+
+    if (!res.ok) {
+      setErro(data.error ?? 'Falha ao validar o e-mail')
+      setLoading(false)
       return
     }
+
+    // 2. Envia o magic link a partir do BROWSER.
+    //    O SDK do Supabase armazena o code_verifier (PKCE) nos cookies
+    //    locais antes de enviar o e-mail. Isso é obrigatório para que
+    //    exchangeCodeForSession funcione quando o usuário clicar no link.
+    const supabase = createClient()
+    const redirectTo = `${getAppUrl()}/magic-link`
+    const { error } = await supabase.auth.signInWithOtp({
+      email,
+      options: { emailRedirectTo: redirectTo },
+    })
+
+    setLoading(false)
+
+    if (error) {
+      setErro(error.message)
+      return
+    }
+
     setEnviado(true)
   }
 

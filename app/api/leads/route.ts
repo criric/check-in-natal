@@ -42,7 +42,10 @@ export async function POST(request: Request) {
       email: d.email || undefined,
       bairro_imovel: d.bairro_imovel,
       mensagem: d.mensagem,
-    }).catch(() => {})
+    }).then((result) => {
+      if (!result.success) console.error('[leads] falha ao enviar e-mail:', result.error)
+      else console.log('[leads] e-mail enviado com sucesso:', result.messageId)
+    }).catch((err) => console.error('[leads] falha ao enviar e-mail (exceção):', err))
 
     return NextResponse.json({ success: true, id: data.id })
   } catch (e) {

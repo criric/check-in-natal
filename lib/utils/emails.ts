@@ -281,6 +281,39 @@ export function templateNovoLead(lead: {
 
 // ─── Envio ──────────────────────────────────────────────────
 
+export async function enviarMagicLinkProprietario(
+  nome: string,
+  email: string,
+  magicLink: string,
+): Promise<EmailResult> {
+  try {
+    const empresa = await carregarEmpresa()
+
+    const conteudo = `
+      <h2 style="margin-top:0;color:#111827;font-size:20px;">Seu link de acesso ao portal</h2>
+      <p>Olá ${escapeHtml(nome)},</p>
+      <p>Clique no botão abaixo para entrar no seu portal de proprietário. O link é válido por <strong>1 hora</strong> e pode ser usado apenas uma vez.</p>
+      <p style="margin:28px 0;">${botaoCTA('Acessar meu portal', magicLink)}</p>
+      <p style="color:#6b7280;font-size:12px;">
+        Se você não solicitou este acesso, ignore este e-mail — sua conta está segura.<br>
+        Não compartilhe este link com ninguém.
+      </p>
+    `
+
+    const { data, error } = await getResend().emails.send({
+      from: getFrom(),
+      to: email,
+      subject: `Seu link de acesso · ${empresa.nome}`,
+      html: emailLayout(conteudo, empresa),
+    })
+
+    if (error) return { success: false, error: error.message }
+    return { success: true, messageId: data?.id }
+  } catch (e) {
+    return { success: false, error: e instanceof Error ? e.message : 'Erro desconhecido' }
+  }
+}
+
 export async function enviarBoasVindasProprietario(
   nome: string,
   email: string,
@@ -479,6 +512,7 @@ export async function notificarAdminNovoLead(lead: {
 }): Promise<EmailResult> {
   try {
     const adminEmail = await carregarAdminEmail()
+    console.log('[leads] adminEmail resolvido:', adminEmail)
     if (!adminEmail) {
       return { success: false, error: 'admin_email não configurado' }
     }
